@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -10,6 +11,7 @@ declare(strict_types=1);
  * Copyright (C) Jean-Sebastien Goupil
  * http://www.barcodebakery.com
  */
+
 namespace BarcodeBakery\Common\Drawer;
 
 if (!function_exists('file_put_contents')) {
@@ -28,15 +30,15 @@ if (!function_exists('file_put_contents')) {
 
 class BCGDrawJPG extends BCGDraw
 {
-    private int $dpi;
-    private int $quality;
+    private ?int $dpi = null;
+    private int $quality = 100;
 
     /**
      * Constructor.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      */
-    public function __construct($image)
+    public function __construct(\GdImage $image)
     {
         parent::__construct($image);
     }
@@ -44,12 +46,12 @@ class BCGDrawJPG extends BCGDraw
     /**
      * Sets the DPI.
      *
-     * @param int $dpi The DPI.
+     * @param int|null $dpi The DPI.
      * @return void
      */
-    public function setDPI(int $dpi): void
+    public function setDPI(?int $dpi): void
     {
-        if (is_int($dpi)) {
+        if ($dpi !== null) {
             $this->dpi = max(1, $dpi);
         } else {
             $this->dpi = null;

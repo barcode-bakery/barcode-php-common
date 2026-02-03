@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -11,27 +12,29 @@ declare(strict_types=1);
  * Copyright (C) Jean-Sebastien Goupil
  * http://www.barcodebakery.com
  */
+
 namespace BarcodeBakery\Common;
 
 class JoinDraw
 {
-    const ALIGN_RIGHT       = 0;
-    const ALIGN_BOTTOM      = 0;
-    const ALIGN_LEFT        = 1;
-    const ALIGN_TOP         = 1;
-    const ALIGN_CENTER      = 2;
+    public const ALIGN_RIGHT       = 0;
+    public const ALIGN_BOTTOM      = 0;
+    public const ALIGN_LEFT        = 1;
+    public const ALIGN_TOP         = 1;
+    public const ALIGN_CENTER      = 2;
 
-    const POSITION_RIGHT    = 0;
-    const POSITION_BOTTOM   = 1;
-    const POSITION_LEFT     = 2;
-    const POSITION_TOP      = 3;
+    public const POSITION_RIGHT    = 0;
+    public const POSITION_BOTTOM   = 1;
+    public const POSITION_LEFT     = 2;
+    public const POSITION_TOP      = 3;
 
-    private $image1;
-    private $image2;
-    private $alignement;
-    private $position;
-    private $space;
-    private $image;
+    private \GdImage $image1;
+    private \GdImage $image2;
+    private BCGColor $background;
+    private int $alignment;
+    private int $position;
+    private int $space;
+    private \GdImage $image;
 
     /**
      * Construct the JoinDrawing Object.
@@ -41,14 +44,14 @@ class JoinDraw
      *  - $alignment is the alignment of the $image2 if this one is smaller than $image1;
      *    if $image2 is bigger than $image1, the $image1 will be positionned on the opposite side specified.
      *
-     * @param mixed $image1 The image 1.
-     * @param mixed $image2 The image 2.
+     * @param BCGDrawing|\GdImage $image1 The image 1.
+     * @param BCGDrawing|\GdImage $image2 The image 2.
      * @param BCGColor $background The bacground color.
      * @param int $space The spacing.
      * @param int $position The position.
      * @param int $alignment The alignment.
      */
-    public function __construct($image1, $image2, BCGColor $background, int $space = 10, int $position = self::POSITION_RIGHT, int $alignment = self::ALIGN_TOP)
+    public function __construct(BCGDrawing|\GdImage $image1, BCGDrawing|\GdImage $image2, BCGColor $background, int $space = 10, int $position = self::POSITION_RIGHT, int $alignment = self::ALIGN_TOP)
     {
         if ($image1 instanceof BCGDrawing) {
             $this->image1 = $image1->getImage();
@@ -62,9 +65,9 @@ class JoinDraw
         }
 
         $this->background = $background;
-        $this->space = (int)$space;
-        $this->position = (int)$position;
-        $this->alignment = (int)$alignment;
+        $this->space = $space;
+        $this->position = $position;
+        $this->alignment = $alignment;
 
         $this->createIm();
     }
@@ -72,10 +75,7 @@ class JoinDraw
     /**
      * Destroys the image.
      */
-    public function __destruct(): void
-    {
-        imagedestroy($this->image);
-    }
+    public function __destruct(): void {}
 
     /**
      * Finds the position where the barcode should be aligned.
@@ -197,9 +197,9 @@ class JoinDraw
     /**
      * Returns the new $image created.
      *
-     * @return resource The surface.
+     * @return \GdImage The surface.
      */
-    public function getImage()
+    public function getImage(): \GdImage
     {
         return $this->image;
     }

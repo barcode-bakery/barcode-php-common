@@ -1,30 +1,30 @@
 {
-    "name": "barcode-bakery/barcode-common",
-    "version": "7.0.4",
-    "license": [
-        "proprietary",
-        "CC-BY-NC-ND-4.0"
-    ],
-    "support": {
-        "email": "contact@barcodebakery.com",
-        "docs": "https://www.barcodebakery.com"
-    },
-    "type": "library",
-    "homepage": "https://www.barcodebakery.com",
-    "authors": [
-        {
-            "name": "Jean-Sébastien Goupil",
-            "email": "contact@barcodebakery.com"
-        }
-    ],
-    "description": "Base code for generating barcode with the Barcode Bakery library. See barcode-bakery/barcode-1d.",
-    "autoload": {
-        "psr-4": {
-            "BarcodeBakery\\Common\\": "src"
-        }
-    },
-    "require": {
-        "php": ">=7.4",
-        "ext-gd": "*"
+  "name": "barcode-bakery/barcode-common",
+  "version": "8.0.0",
+  "license": [
+    "proprietary",
+    "CC-BY-NC-ND-4.0"
+  ],
+  "support": {
+    "email": "contact@barcodebakery.com",
+    "docs": "https://www.barcodebakery.com"
+  },
+  "type": "library",
+  "homepage": "https://www.barcodebakery.com",
+  "authors": [
+    {
+      "name": "Jean-Sébastien Goupil",
+      "email": "contact@barcodebakery.com"
     }
+  ],
+  "description": "Base code for generating barcode with the Barcode Bakery library. See barcode-bakery/barcode-1d.",
+  "autoload": {
+    "psr-4": {
+      "BarcodeBakery\\Common\\": "src"
+    }
+  },
+  "require": {
+    "php": ">=8.4",
+    "ext-gd": "*"
+  }
 }

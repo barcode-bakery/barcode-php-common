@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -10,6 +11,7 @@ declare(strict_types=1);
  * Copyright (C) Jean-Sebastien Goupil
  * http://www.barcodebakery.com
  */
+
 namespace BarcodeBakery\Common\Drawer;
 
 if (!function_exists('file_put_contents')) {
@@ -28,14 +30,14 @@ if (!function_exists('file_put_contents')) {
 
 class BCGDrawPNG extends BCGDraw
 {
-    private ?int $dpi;
+    private ?int $dpi = null;
 
     /**
      * Constructor.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      */
-    public function __construct($image)
+    public function __construct(\GdImage $image)
     {
         parent::__construct($image);
     }
@@ -87,10 +89,10 @@ class BCGDrawPNG extends BCGDraw
         }
     }
 
-    private function detectChunks($bin)
+    private function detectChunks(string $bin): array
     {
         $data = substr($bin, 8);
-        $chunks = array();
+        $chunks = [];
         $c = strlen($data);
 
         $offset = 0;
@@ -99,7 +101,7 @@ class BCGDrawPNG extends BCGDraw
             $size = $packed['size'];
             $chunk = $packed['chunk'];
 
-            $chunks[] = array('offset' => $offset + 8, 'size' => $size, 'chunk' => $chunk);
+            $chunks[] = ['offset' => $offset + 8, 'size' => $size, 'chunk' => $chunk];
             $jump = $size + 12;
             $offset += $jump;
             $data = substr($data, $jump);
@@ -164,7 +166,7 @@ class BCGDrawPNG extends BCGDraw
         // Chunks is dirty!! But we are done.
     }
 
-    private static array $crcTable = array();
+    private static array $crcTable = [];
     private static bool $crcTableComputed = false;
 
     private static function make_crcTable(): void

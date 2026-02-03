@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -10,23 +11,25 @@ declare(strict_types=1);
  * Copyright (C) Jean-Sebastien Goupil
  * http://www.barcodebakery.com
  */
+
 namespace BarcodeBakery\Common;
 
 use BarcodeBakery\Common\BCGArgumentException;
-use BarcodeBakery\Common\BCGDrawException;
 
 abstract class BCGBarcode
 {
-    const COLOR_BG = 0;
-    const COLOR_FG = 1;
+    public const COLOR_BG = 0;
+    public const COLOR_FG = 1;
 
     protected BCGColor $colorFg;
     protected BCGColor $colorBg;
     protected int $scale;                   // Scale of the graphic, default: 1
     protected int $offsetX;
     protected int $offsetY;       // Position where to start the drawing
-    protected array $labels = array();        // Array of BCGLabel
-    protected array $pushLabel = array(0, 0); // Push for the label, left and top
+    /** @var BCGLabel[] */
+    protected array $labels = [];        // Array of BCGLabel
+    /** @var array{int, int} */
+    protected array $pushLabel = [0, 0]; // Push for the label, left and top
 
     /**
      * Constructor.
@@ -55,9 +58,7 @@ abstract class BCGBarcode
      *
      * @param mixed $text The text.
      */
-    public function parse($text): void
-    {
-    }
+    public function parse(mixed $text): void {}
 
     /**
      * Gets the foreground color of the barcode.
@@ -76,7 +77,7 @@ abstract class BCGBarcode
      * @param BCGColor|int $code The foreground color.
      * @return void
      */
-    public function setForegroundColor($code): void
+    public function setForegroundColor(BCGColor|int $code): void
     {
         if ($code instanceof BCGColor) {
             $this->colorFg = $code;
@@ -102,7 +103,7 @@ abstract class BCGBarcode
      * @param BCGColor|int $code The background color.
      * @return void
      */
-    public function setBackgroundColor($code): void
+    public function setBackgroundColor(BCGColor|int $code): void
     {
         if ($code instanceof BCGColor) {
             $this->colorBg = $code;
@@ -120,8 +121,9 @@ abstract class BCGBarcode
      *
      * @param BCGColor|int $foregroundColor The foreground color.
      * @param BCGColor|int $backgroundColor The background color.
+     * @return void
      */
-    public function setColor($foregroundColor, $backgroundColor): void
+    public function setColor(BCGColor|int $foregroundColor, BCGColor|int $backgroundColor): void
     {
         $this->setForegroundColor($foregroundColor);
         $this->setBackgroundColor($backgroundColor);
@@ -157,10 +159,10 @@ abstract class BCGBarcode
     /**
      * Abstract method that draws the barcode on the resource.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      * @return void
      */
-    abstract public function draw($image): void;
+    abstract public function draw(\GdImage $image): void;
 
     /**
      * Returns the maximal size of a barcode.
@@ -169,12 +171,12 @@ abstract class BCGBarcode
      *
      * @param int $width The width.
      * @param int $height The height.
-     * @return int[] An array, [0] being the width, [1] being the height.
+     * @return array{int, int} An array, [0] being the width, [1] being the height.
      */
     public function getDimension(int $width, int $height): array
     {
         $labels = $this->getBiggestLabels(false);
-        $pixelsAround = array(0, 0, 0, 0); // TRBL
+        $pixelsAround = [0, 0, 0, 0]; // TRBL
         if (isset($labels[BCGLabel::POSITION_TOP])) {
             $dimension = $labels[BCGLabel::POSITION_TOP]->getDimension();
             $pixelsAround[0] += $dimension[1];
@@ -232,7 +234,7 @@ abstract class BCGBarcode
         $finalW = ($width + $this->offsetX) * $this->scale + $pixelsAround[1] + $pixelsAround[3];
         $finalH = ($height + $this->offsetY) * $this->scale + $pixelsAround[0] + $pixelsAround[2];
 
-        return array((int)$finalW, (int)$finalH);
+        return [(int)$finalW, (int)$finalH];
     }
 
     /**
@@ -338,7 +340,7 @@ abstract class BCGBarcode
      */
     public function clearLabels(): void
     {
-        $this->labels = array();
+        $this->labels = [];
     }
 
     /**
@@ -347,14 +349,14 @@ abstract class BCGBarcode
      * $x1 and $y1 represent the top left corner.
      * $x2 and $y2 represent the bottom right corner.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      * @param int $x1 The top left corner X coordinate.
      * @param int $y1 The top left corner Y coordinate.
      * @param int $x2 The bottom right corner X coordinate.
      * @param int $y2 The bottom right corner Y coordinate.
      * @return void
      */
-    protected function drawText($image, int $x1, int $y1, int $x2, int $y2): void
+    protected function drawText(\GdImage $image, int $x1, int $y1, int $x2, int $y2): void
     {
         foreach ($this->labels as $label) {
             $label->draw(
@@ -370,13 +372,13 @@ abstract class BCGBarcode
     /**
      * Draws 1 pixel on the resource at a specific position with a determined color.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      * @param int $x The X coordinate.
      * @param int $y The Y coordinate.
      * @param int $color The color.
      * @return void
      */
-    protected function drawPixel($image, int $x, int $y, int $color = self::COLOR_FG): void
+    protected function drawPixel(\GdImage $image, int $x, int $y, int $color = self::COLOR_FG): void
     {
         $xR = ($x + $this->offsetX) * $this->scale + $this->pushLabel[0];
         $yR = ($y + $this->offsetY) * $this->scale + $this->pushLabel[1];
@@ -395,7 +397,7 @@ abstract class BCGBarcode
     /**
      * Draws an empty rectangle on the resource at a specific position with a determined color.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      * @param int $x1 The top left corner X coordinate.
      * @param int $y1 The top left corner Y coordinate.
      * @param int $x2 The bottom right corner X coordinate.
@@ -403,7 +405,7 @@ abstract class BCGBarcode
      * @param int $color The color.
      * @return void
      */
-    protected function drawRectangle($image, int $x1, int $y1, int $x2, int $y2, int $color = self::COLOR_FG): void
+    protected function drawRectangle(\GdImage $image, int $x1, int $y1, int $x2, int $y2, int $color = self::COLOR_FG): void
     {
         if ($this->scale === 1) {
             imagefilledrectangle(
@@ -425,7 +427,7 @@ abstract class BCGBarcode
     /**
      * Draws a filled rectangle on the resource at a specific position with a determined color.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      * @param int $x1 The top left corner X coordinate.
      * @param int $y1 The top left corner Y coordinate.
      * @param int $x2 The bottom right corner X coordinate.
@@ -433,14 +435,14 @@ abstract class BCGBarcode
      * @param int $color The color.
      * @return void
      */
-    protected function drawFilledRectangle($image, int $x1, int $y1, int $x2, int $y2, int $color = self::COLOR_FG): void
+    protected function drawFilledRectangle(\GdImage $image, int $x1, int $y1, int $x2, int $y2, int $color = self::COLOR_FG): void
     {
         if ($x1 > $x2) { // Swap
-            $x1 ^= $x2 ^= $x1 ^= $x2;
+            [$x1, $x2] = [$x2, $x1];
         }
 
         if ($y1 > $y2) { // Swap
-            $y1 ^= $y2 ^= $y1 ^= $y2;
+            [$y1, $y2] = [$y2, $y1];
         }
 
         imagefilledrectangle(
@@ -456,11 +458,11 @@ abstract class BCGBarcode
     /**
      * Allocates the color based on the integer.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      * @param int $color The color.
-     * @return resource Implementation details of the color.
+     * @return int|false Implementation details of the color.
      */
-    protected function getColor($image, int $color)
+    protected function getColor(\GdImage $image, int $color): int|false
     {
         if ($color === self::COLOR_BG) {
             return $this->colorBg->allocate($image);
@@ -472,15 +474,14 @@ abstract class BCGBarcode
     /**
      * Returning the biggest label widths for LEFT/RIGHT and heights for TOP/BOTTOM.
      *
-     * @param bool $reversed Indicates if the barcode has been rotated.
-     * @return BCGLabel[] Position of the biggest barcode.
+     * @return array<int, BCGLabel> Position of the biggest barcode.
      */
     private function getBiggestLabels(bool $reversed = false): array
     {
         $searchLR = $reversed ? 1 : 0;
         $searchTB = $reversed ? 0 : 1;
 
-        $labels = array();
+        $labels = [];
         foreach ($this->labels as $label) {
             $position = $label->getPosition();
             if (isset($labels[$position])) {

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -10,6 +11,7 @@ declare(strict_types=1);
  * Copyright (C) Jean-Sebastien Goupil
  * http://www.barcodebakery.com
  */
+
 namespace BarcodeBakery\Common;
 
 class BCGFontPhp implements BCGFont
@@ -25,7 +27,7 @@ class BCGFontPhp implements BCGFont
      *
      * @param int $font The font.
      */
-    public function __construct($font)
+    public function __construct(int $font)
     {
         $this->font = max(0, intval($font));
         $this->backgroundColor = new BCGColor(0xffffff);
@@ -125,7 +127,7 @@ class BCGFontPhp implements BCGFont
     /**
      * Returns the width and height that the text takes to be written.
      *
-     * @return int[]
+     * @return array{int, int}
      */
     public function getDimension(): array
     {
@@ -134,9 +136,9 @@ class BCGFontPhp implements BCGFont
 
         $rotationAngle = $this->getRotationAngle();
         if ($rotationAngle === 90 || $rotationAngle === 270) {
-            return array($height, $width);
+            return [$height, $width];
         } else {
-            return array($width, $height);
+            return [$width, $height];
         }
     }
 
@@ -144,12 +146,12 @@ class BCGFontPhp implements BCGFont
      * Draws the text on the image at a specific position.
      * $x and $y represent the left bottom corner.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      * @param int $x X.
      * @param int $y Y.
      * @return void
      */
-    public function draw($image, int $x, int $y): void
+    public function draw(\GdImage $image, int $x, int $y): void
     {
         if ($this->getRotationAngle() !== 0) {
             if (!function_exists('imagerotate')) {

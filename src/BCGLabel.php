@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -10,20 +11,21 @@ declare(strict_types=1);
  * Copyright (C) Jean-Sebastien Goupil
  * http://www.barcodebakery.com
  */
+
 namespace BarcodeBakery\Common;
 
 class BCGLabel
 {
-    const POSITION_TOP = 0;
-    const POSITION_RIGHT = 1;
-    const POSITION_BOTTOM = 2;
-    const POSITION_LEFT = 3;
+    public const POSITION_TOP = 0;
+    public const POSITION_RIGHT = 1;
+    public const POSITION_BOTTOM = 2;
+    public const POSITION_LEFT = 3;
 
-    const ALIGN_LEFT = 0;
-    const ALIGN_TOP = 0;
-    const ALIGN_CENTER = 1;
-    const ALIGN_RIGHT = 2;
-    const ALIGN_BOTTOM = 2;
+    public const ALIGN_LEFT = 0;
+    public const ALIGN_TOP = 0;
+    public const ALIGN_CENTER = 1;
+    public const ALIGN_RIGHT = 2;
+    public const ALIGN_BOTTOM = 2;
 
     private BCGFont $font;
     private string $text = '';
@@ -273,7 +275,7 @@ class BCGLabel
      * [0]: width
      * [1]: height
      *
-     * @return int[] The dimension.
+     * @return array{int, int} The dimension.
      */
     public function getDimension(): array
     {
@@ -292,7 +294,7 @@ class BCGLabel
             $h += max(0, $this->offset);
         }
 
-        return array($w, $h);
+        return [$w, $h];
     }
 
     /**
@@ -301,14 +303,14 @@ class BCGLabel
      * $x1 and $y1 represent the top left corner.
      * $x2 and $y2 represent the bottom right corner.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      * @param int $x1 X1.
      * @param int $y1 Y1.
      * @param int $x2 X2.
      * @param int $y2 Y2.
      * @return void
      */
-    public function draw($image, int $x1, int $y1, int $x2, int $y2): void
+    public function draw(\GdImage $image, int $x1, int $y1, int $x2, int $y2): void
     {
         $x = 0;
         $y = 0;

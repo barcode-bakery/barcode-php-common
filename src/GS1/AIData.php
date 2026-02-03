@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -10,17 +11,11 @@ declare(strict_types=1);
  * Copyright (C) Jean-Sebastien Goupil
  * http://www.barcodebakery.com
  */
+
 namespace BarcodeBakery\Common\GS1;
 
 class AIData
 {
-    private string $ai;
-    private int $kindOfData;
-    private int $minLength;
-    private int $maxLength;
-    private bool $checksum;
-    private string $description;
-
     /**
      * Constructor creating an entry for an AI.
      *
@@ -31,15 +26,14 @@ class AIData
      * @param bool $checksum Indicates if a checksum is present.
      * @param string $description The description of the AI.
      */
-    function __construct(string $ai, int $kindOfData, int $minLength, int $maxLength, bool $checksum, string $description)
-    {
-        $this->ai = $ai;
-        $this->kindOfData = $kindOfData;
-        $this->minLength = $minLength;
-        $this->maxLength = $maxLength;
-        $this->checksum = $checksum;
-        $this->description = $description;
-    }
+    public function __construct(
+        private string $ai,
+        private int $kindOfData,
+        private int $minLength,
+        private int $maxLength,
+        private bool $checksum,
+        private string $description
+    ) {}
 
     /**
      * Gets the AI.

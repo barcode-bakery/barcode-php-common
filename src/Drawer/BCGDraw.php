@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -10,19 +11,20 @@ declare(strict_types=1);
  * Copyright (C) Jean-Sebastien Goupil
  * http://www.barcodebakery.com
  */
+
 namespace BarcodeBakery\Common\Drawer;
 
 abstract class BCGDraw
 {
-    protected $image;
-    protected ?string $fileName;
+    protected \GdImage $image;
+    protected ?string $fileName = null;
 
     /**
      * Constructor.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      */
-    protected function __construct($image)
+    protected function __construct(\GdImage $image)
     {
         $this->image = $image;
     }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -11,6 +12,7 @@ declare(strict_types=1);
  * Copyright (C) Jean-Sebastien Goupil
  * http://www.barcodebakery.com
  */
+
 namespace BarcodeBakery\Common;
 
 use BarcodeBakery\Common\Drawer\BCGDrawPNG;
@@ -18,15 +20,15 @@ use BarcodeBakery\Common\Drawer\BCGDrawJPG;
 
 class BCGDrawing
 {
-    const IMG_FORMAT_PNG = 1;
-    const IMG_FORMAT_JPEG = 2;
-    const IMG_FORMAT_GIF = 3;
-    const IMG_FORMAT_WBMP = 4;
+    public const IMG_FORMAT_PNG = 1;
+    public const IMG_FORMAT_JPEG = 2;
+    public const IMG_FORMAT_GIF = 3;
+    public const IMG_FORMAT_WBMP = 4;
 
     private int $w;
     private int $h;
     private BCGColor $color;
-    private $image;
+    private \GdImage|null $image;
     private ?BCGBarcode $barcode = null;
     private ?int $dpi;
     private int $rotateDegree;
@@ -39,7 +41,7 @@ class BCGDrawing
      * @param BCGBarcode|null $barcode The barcode.
      * @param BCGColor|null $color Background color.
      */
-    public function __construct(?BCGBarcode $barcode, BCGColor $color = null)
+    public function __construct(?BCGBarcode $barcode, BCGColor|null $color = null)
     {
         $this->image = null;
         $this->setBarcode($barcode);
@@ -63,9 +65,9 @@ class BCGDrawing
     /**
      * Gets the image resource.
      *
-     * @return resource The surface.
+     * @return \GdImage|null The surface.
      */
-    public function getImage()
+    public function getImage(): ?\GdImage
     {
         return $this->image;
     }
@@ -73,10 +75,10 @@ class BCGDrawing
     /**
      * Sets the image resource.
      *
-     * @param resource $image The surface.
+     * @param \GdImage|null $image The surface.
      * @return void
      */
-    public function setImage($image): void
+    public function setImage(?\GdImage $image): void
     {
         $this->image = $image;
     }
@@ -121,9 +123,9 @@ class BCGDrawing
     /**
      * Gets the DPI for supported filetype.
      *
-     * @return int The DPI.
+     * @return int|null The DPI.
      */
-    public function getDPI(): int
+    public function getDPI(): ?int
     {
         return $this->dpi;
     }
@@ -131,10 +133,10 @@ class BCGDrawing
     /**
      * Sets the DPI for supported filetype.
      *
-     * @param int $dpi The DPI.
+     * @param int|null $dpi The DPI.
      * @return void
      */
-    public function setDPI(int $dpi): void
+    public function setDPI(?int $dpi): void
     {
         $this->dpi = $dpi;
     }
@@ -206,7 +208,7 @@ class BCGDrawing
      * Saves $image into the file (many format available).
      *
      * @param int $imageStyle The image style.
-     * @param string $fileName The file name.
+     * @param string|null $fileName The file name.
      * @param int $quality The quality.
      * @return void
      */
@@ -235,7 +237,7 @@ class BCGDrawing
             $drawer->setQuality($quality);
         } elseif ($imageStyle === self::IMG_FORMAT_GIF) {
             // Some PHP versions have a bug if passing 2nd argument as null.
-            if ($this->fileName === null || $fileName === '') {
+            if ($fileName === null || $fileName === '') {
                 imagegif($image);
             } else {
                 imagegif($image, $fileName);
@@ -267,7 +269,7 @@ class BCGDrawing
      */
     public function destroy(): void
     {
-        @imagedestroy($this->image);
+        $this->image = null;
     }
 
     /**
@@ -279,7 +281,7 @@ class BCGDrawing
     {
         if ($this->image === null) {
             $this->image = imagecreatetruecolor($this->w, $this->h)
-            or die('Can\'t Initialize the GD Libraty');
+                or die('Can\'t Initialize the GD Libraty');
             imagefilledrectangle($this->image, 0, 0, $this->w - 1, $this->h - 1, $this->color->allocate($this->image));
         }
     }

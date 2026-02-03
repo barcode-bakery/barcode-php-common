@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -10,6 +11,7 @@ declare(strict_types=1);
  * Copyright (C) Jean-Sebastien Goupil
  * http://www.barcodebakery.com
  */
+
 namespace BarcodeBakery\Common;
 
 abstract class BCGBarcode2D extends BCGBarcode
@@ -33,8 +35,9 @@ abstract class BCGBarcode2D extends BCGBarcode
      *
      * @param int $width The width.
      * @param int $height The height.
-     * @return int[] An array, [0] being the width, [1] being the height.
+     * @return array{int, int} An array, [0] being the width, [1] being the height.
      */
+    #[\Override]
     public function getDimension(int $width, int $height): array
     {
         return parent::getDimension($width * $this->scaleX, $height * $this->scaleY);
@@ -51,7 +54,7 @@ abstract class BCGBarcode2D extends BCGBarcode
     {
         $scaleX = intval($scaleX);
         if ($scaleX <= 0) {
-            throw new ArgumentException('The scale must be larger than 0.', 'scaleX');
+            throw new BCGArgumentException('The scale must be larger than 0.', 'scaleX');
         }
 
         $this->scaleX = $scaleX;
@@ -68,7 +71,7 @@ abstract class BCGBarcode2D extends BCGBarcode
     {
         $scaleY = intval($scaleY);
         if ($scaleY <= 0) {
-            throw new ArgumentException('The scale must be larger than 0.', 'scaleY');
+            throw new BCGArgumentException('The scale must be larger than 0.', 'scaleY');
         }
 
         $this->scaleY = $scaleY;
@@ -80,14 +83,15 @@ abstract class BCGBarcode2D extends BCGBarcode
      * $x1 and $y1 represent the top left corner.
      * $x2 and $y2 represent the bottom right corner.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      * @param int $x1 X1.
      * @param int $y1 Y1.
      * @param int $x2 X2.
      * @param int $y2 Y2.
      * @return void
      */
-    protected function drawText($image, int $x1, int $y1, int $x2, int $y2): void
+    #[\Override]
+    protected function drawText(\GdImage $image, int $x1, int $y1, int $x2, int $y2): void
     {
         foreach ($this->labels as $label) {
             $label->draw(
@@ -103,13 +107,14 @@ abstract class BCGBarcode2D extends BCGBarcode
     /**
      * Draws 1 pixel on the resource at a specific position with a determined color.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      * @param int $x X.
      * @param int $y Y.
      * @param int $color The color.
      * @return void
      */
-    protected function drawPixel($image, int $x, int $y, int $color = self::COLOR_FG): void
+    #[\Override]
+    protected function drawPixel(\GdImage $image, int $x, int $y, int $color = self::COLOR_FG): void
     {
         $scaleX = $this->scale * $this->scaleX;
         $scaleY = $this->scale * $this->scaleY;
@@ -131,7 +136,7 @@ abstract class BCGBarcode2D extends BCGBarcode
     /**
      * Draws an empty rectangle on the resource at a specific position with a determined color.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      * @param int $x1 X1.
      * @param int $y1 Y1.
      * @param int $x2 X2.
@@ -139,7 +144,8 @@ abstract class BCGBarcode2D extends BCGBarcode
      * @param int $color The color.
      * @return void
      */
-    protected function drawRectangle($image, int $x1, int $y1, int $x2, int $y2, int $color = BCGBarcode::COLOR_FG): void
+    #[\Override]
+    protected function drawRectangle(\GdImage $image, int $x1, int $y1, int $x2, int $y2, int $color = BCGBarcode::COLOR_FG): void
     {
         $scaleX = $this->scale * $this->scaleX;
         $scaleY = $this->scale * $this->scaleY;
@@ -164,7 +170,7 @@ abstract class BCGBarcode2D extends BCGBarcode
     /**
      * Draws a filled rectangle on the resource at a specific position with a determined color.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      * @param int $x1 X1.
      * @param int $y1 Y1.
      * @param int $x2 X2.
@@ -172,14 +178,15 @@ abstract class BCGBarcode2D extends BCGBarcode
      * @param int $color The color.
      * @return void
      */
-    protected function drawFilledRectangle($image, int $x1, int $y1, int $x2, int $y2, int $color = BCGBarcode::COLOR_FG): void
+    #[\Override]
+    protected function drawFilledRectangle(\GdImage $image, int $x1, int $y1, int $x2, int $y2, int $color = BCGBarcode::COLOR_FG): void
     {
         if ($x1 > $x2) { // Swap
-            $x1 ^= $x2 ^= $x1 ^= $x2;
+            [$x1, $x2] = [$x2, $x1];
         }
 
         if ($y1 > $y2) { // Swap
-            $y1 ^= $y2 ^= $y1 ^= $y2;
+            [$y1, $y2] = [$y2, $y1];
         }
 
         $scaleX = $this->scale * $this->scaleX;

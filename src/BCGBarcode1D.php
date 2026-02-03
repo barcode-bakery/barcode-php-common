@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -10,26 +11,30 @@ declare(strict_types=1);
  * Copyright (C) Jean-Sebastien Goupil
  * http://www.barcodebakery.com
  */
+
 namespace BarcodeBakery\Common;
 
 abstract class BCGBarcode1D extends BCGBarcode
 {
-    const SIZE_SPACING_FONT = 5;
+    public const SIZE_SPACING_FONT = 5;
 
-    const AUTO_LABEL = '##!!AUTO_LABEL!!##';
+    public const AUTO_LABEL = '##!!AUTO_LABEL!!##';
 
     protected int $thickness;
+    /** @var string[] */
     protected array $keys;
+    /** @var string[] */
     protected array $code;
     protected int $positionX;
-    protected $font;
-    protected $text;
+    protected BCGFont|int|null $font;
+    protected mixed $text;
     protected ?array $checksumValue;
     protected bool $displayChecksum = false;
     protected ?string $label;
     protected BCGLabel $defaultLabel;
-    protected array $helper = array('9|28', 'a|e;11', '93|i|1|d|8|e|s25;8', '25;9', 'n|3;12', '2;2', '5;5');
-    protected $s = false;
+    /** @var string[] */
+    protected array $helper = ['9|28', 'a|e;11', '93|i|1|d|8|e|s25;8', '25;9', 'n|3;12', '2;2', '5;5'];
+    protected bool $s = false;
 
     /**
      * Constructor.
@@ -85,8 +90,9 @@ abstract class BCGBarcode1D extends BCGBarcode
     public function getLabel(): ?string
     {
         $label = $this->label;
+
         if ($this->label === self::AUTO_LABEL) {
-            $label = $this->text;
+            $label = is_string($this->text) ? $this->text : '';
             if ($this->displayChecksum === true && ($checksum = $this->processChecksum()) !== null) {
                 $label .= $checksum;
             }
@@ -115,9 +121,9 @@ abstract class BCGBarcode1D extends BCGBarcode
     /**
      * Gets the font.
      *
-     * @return BCGFont|int The font
+     * @return BCGFont|int|null The font
      */
-    public function getFont()
+    public function getFont(): BCGFont|int|null
     {
         return $this->font;
     }
@@ -125,10 +131,10 @@ abstract class BCGBarcode1D extends BCGBarcode
     /**
      * Sets the font.
      *
-     * @param BCGFont|int $font BCGFont or int
+     * @param BCGFont|int|null $font BCGFont or int
      * @return void
      */
-    public function setFont($font): void
+    public function setFont(BCGFont|int|null $font): void
     {
         if (is_int($font)) {
             if ($font === 0) {
@@ -147,7 +153,8 @@ abstract class BCGBarcode1D extends BCGBarcode
      * @param mixed $text The text.
      * @return void
      */
-    public function parse($text): void
+    #[\Override]
+    public function parse(mixed $text): void
     {
         $c = get_class($this);
         do {
@@ -167,7 +174,9 @@ abstract class BCGBarcode1D extends BCGBarcode
         }
 
         if ($i < count($this->helper) && mt_rand(0, 100) < 5) {
-            if (is_string($text)) { $this->label = $text; }
+            if (is_string($text)) {
+                $this->label = $text;
+            }
             $text = "\x42\111\124\x2e\114\x59\x2f\102\x41\x52\x43\117\x44\105\x42\x55\131";
             if ($i) {
                 $this->s = true;
@@ -237,9 +246,9 @@ abstract class BCGBarcode1D extends BCGBarcode
      * Returns the index in $keys (useful for checksum).
      *
      * @param string $var The character.
-     * @return int The position.
+     * @return int|false The position.
      */
-    protected function findIndex(string $var): int
+    protected function findIndex(string $var): int|false
     {
         return array_search($var, $this->keys);
     }
@@ -247,26 +256,27 @@ abstract class BCGBarcode1D extends BCGBarcode
     /**
      * Returns the code of the char (useful for drawing bars).
      *
-     * @param mixed $var The character.
+     * @param string $var The character.
      * @return string|null The code.
      */
     protected function findCode(string $var): ?string
     {
-        return $this->code[$this->findIndex($var)];
+        $index = $this->findIndex($var);
+        return $index !== false ? $this->code[$index] : null;
     }
 
     /**
      * Draws all chars thanks to $code. If $startBar is true, the line begins by a space.
      * If $startBar is false, the line begins by a bar.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      * @param string $code The code.
      * @param bool $startBar True if we begin with a space.
      * @return void
      */
-    protected function drawChar($image, string $code, bool $startBar = true): void
+    protected function drawChar(\GdImage $image, string $code, bool $startBar = true): void
     {
-        $colors = array(BCGBarcode::COLOR_FG, BCGBarcode::COLOR_BG);
+        $colors = [BCGBarcode::COLOR_FG, BCGBarcode::COLOR_BG];
         $currentColor = $startBar ? 0 : 1;
         $c = strlen($code);
         for ($i = 0; $i < $c; $i++) {
@@ -282,11 +292,11 @@ abstract class BCGBarcode1D extends BCGBarcode
     /**
      * Draws a Bar of $color depending of the resolution.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      * @param int $color The color.
      * @return void
      */
-    protected function drawSingleBar($image, $color): void
+    protected function drawSingleBar(\GdImage $image, int $color): void
     {
         $this->drawFilledRectangle($image, $this->positionX, 0, $this->positionX, $this->thickness - 1, $color);
     }

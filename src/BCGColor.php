@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -10,6 +11,7 @@ declare(strict_types=1);
  * Copyright (C) Jean-Sebastien Goupil
  * http://www.barcodebakery.com
  */
+
 namespace BarcodeBakery\Common;
 
 class BCGColor
@@ -30,10 +32,8 @@ class BCGColor
      *
      * @param mixed ...
      */
-    // TODO Add support to ... variable
-    public function __construct()
+    public function __construct(mixed ...$args)
     {
-        $args = func_get_args();
         $c = count($args);
         if ($c === 3) {
             $this->r = intval($args[0]);
@@ -103,10 +103,10 @@ class BCGColor
     /**
      * Returns the int value for PHP color.
      *
-     * @param resource $image The surface
-     * @return int
+     * @param \GdImage $image The surface
+     * @return int|false
      */
-    public function allocate(&$image)
+    public function allocate(\GdImage $image): int|false
     {
         $allocated = imagecolorallocate($image, $this->r, $this->g, $this->b);
         if ($this->transparent) {
@@ -127,44 +127,25 @@ class BCGColor
      */
     public static function getColor(string $code, string $default = 'white'): int
     {
-        switch (strtolower($code)) {
-            case '':
-            case 'white':
-                return 0xffffff;
-            case 'black':
-                return 0x000000;
-            case 'maroon':
-                return 0x800000;
-            case 'red':
-                return 0xff0000;
-            case 'orange':
-                return 0xffa500;
-            case 'yellow':
-                return 0xffff00;
-            case 'olive':
-                return 0x808000;
-            case 'purple':
-                return 0x800080;
-            case 'fuchsia':
-                return 0xff00ff;
-            case 'lime':
-                return 0x00ff00;
-            case 'green':
-                return 0x008000;
-            case 'navy':
-                return 0x000080;
-            case 'blue':
-                return 0x0000ff;
-            case 'aqua':
-                return 0x00ffff;
-            case 'teal':
-                return 0x008080;
-            case 'silver':
-                return 0xc0c0c0;
-            case 'gray':
-                return 0x808080;
-            default:
-                return self::getColor($default, 'white');
-        }
+        return match (strtolower($code)) {
+            '', 'white' => 0xffffff,
+            'black' => 0x000000,
+            'maroon' => 0x800000,
+            'red' => 0xff0000,
+            'orange' => 0xffa500,
+            'yellow' => 0xffff00,
+            'olive' => 0x808000,
+            'purple' => 0x800080,
+            'fuchsia' => 0xff00ff,
+            'lime' => 0x00ff00,
+            'green' => 0x008000,
+            'navy' => 0x000080,
+            'blue' => 0x0000ff,
+            'aqua' => 0x00ffff,
+            'teal' => 0x008080,
+            'silver' => 0xc0c0c0,
+            'gray' => 0x808080,
+            default => self::getColor($default, 'white'),
+        };
     }
 }

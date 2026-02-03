@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -10,6 +11,7 @@ declare(strict_types=1);
  * Copyright (C) Jean-Sebastien Goupil
  * http://www.barcodebakery.com
  */
+
 namespace BarcodeBakery\Common;
 
 interface BCGFont
@@ -23,5 +25,5 @@ interface BCGFont
     public function getForegroundColor(): BCGColor;
     public function setForegroundColor(BCGColor $foregroundColor): void;
     public function getDimension(): array;
-    public function draw($image, int $x, int $y): void;
+    public function draw(\GdImage $image, int $x, int $y): void;
 }

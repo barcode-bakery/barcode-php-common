@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -10,16 +11,12 @@ declare(strict_types=1);
  * Copyright (C) Jean-Sebastien Goupil
  * http://www.barcodebakery.com
  */
+
 namespace BarcodeBakery\Common;
 
 class BCGFontInfo
 {
-    private $box;
-
-    public function __construct($box)
-    {
-        $this->box = $box;
-    }
+    public function __construct(private array $box) {}
 
     public function getBox(): array
     {
@@ -45,8 +42,8 @@ class BCGFontInfo
 
     public function getHeight(): int
     {
-        $minY = min(array($this->box[1], $this->box[3], $this->box[5], $this->box[7]));
-        $maxY = max(array($this->box[1], $this->box[3], $this->box[5], $this->box[7]));
+        $minY = min([$this->box[1], $this->box[3], $this->box[5], $this->box[7]]);
+        $maxY = max([$this->box[1], $this->box[3], $this->box[5], $this->box[7]]);
         return $maxY - $minY;
     }
 }
@@ -136,6 +133,8 @@ class BCGFontFile implements BCGFont
      */
     public function getBackgroundColor(): BCGColor
     {
+        // Not used.
+        return new BCGColor();
     }
 
     /**
@@ -144,9 +143,7 @@ class BCGFontFile implements BCGFont
      * @param BCGColor $backgroundColor The background color.
      * @return void
      */
-    public function setBackgroundColor(BCGColor $backgroundColor): void
-    {
-    }
+    public function setBackgroundColor(BCGColor $backgroundColor): void {}
 
     /**
      * Gets the foreground color.
@@ -172,7 +169,7 @@ class BCGFontFile implements BCGFont
     /**
      * Returns the width and height that the text takes to be written.
      *
-     * @return int[]
+     * @return array{int, int}
      */
     public function getDimension(): array
     {
@@ -181,9 +178,9 @@ class BCGFontFile implements BCGFont
         $width = $fontInfo->getWidth();
         $height = $fontInfo->getHeight();
         if ($rotationAngle === 90 || $rotationAngle === 270) {
-            return array($height, $width);
+            return [$height, $width];
         } else {
-            return array($width, $height);
+            return [$width, $height];
         }
     }
 
@@ -191,12 +188,12 @@ class BCGFontFile implements BCGFont
      * Draws the text on the image at a specific position.
      * $x and $y represent the left bottom corner.
      *
-     * @param resource $image The surface.
+     * @param \GdImage $image The surface.
      * @param int $x X.
      * @param int $y Y.
      * @return void
      */
-    public function draw($image, int $x, int $y): void
+    public function draw(\GdImage $image, int $x, int $y): void
     {
         $drawingPosition = $this->getDrawingPosition($x, $y);
         imagettftext($image, $this->size, $this->rotationAngle, $drawingPosition[0], $drawingPosition[1], $this->foregroundColor->allocate($image), $this->path, $this->text);
@@ -220,7 +217,7 @@ class BCGFontFile implements BCGFont
             $y += $dimension[1];
         }
 
-        return array($x, $y);
+        return [$x, $y];
     }
 
     private function getFontInfo(): BCGFontInfo
